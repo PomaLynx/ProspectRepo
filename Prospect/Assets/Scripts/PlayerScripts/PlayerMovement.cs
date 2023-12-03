@@ -8,7 +8,9 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody playerRigidbody;
 
     [Header("Attributes")]
-    public float playerSpeed = 7;
+    private float playerSpeed = 7f;
+    public float walkSpeed = 3f;
+    public float runSpeed = 5f;
 
     [Header("Jump Parameters")]
     public float jumpForce;
@@ -79,6 +81,15 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             playerRigidbody.AddForce(playerDirection.normalized * playerSpeed * airMultiplier, ForceMode.Force);
+        }
+
+        if (Input.GetKey("left shift"))
+        {
+            playerSpeed = runSpeed;
+        }
+        else
+        {
+            playerSpeed = walkSpeed;
         }
     }
 
