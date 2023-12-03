@@ -5,36 +5,35 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
     [Header("References")]
-    private GameObject Player;
+    public Transform player;
 
     [Header("Attributes")]
-    public float mouseSensitivity = 500f;
-    float xRotation;
+    public float mouseSensitivity;
+    float xRotation = 0;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-
-        Player = transform.parent.gameObject;
     }
 
     void Update()
     {
-        Movement();
+        CamMovement();
     }
 
-    void Movement()
+    void CamMovement()
     {
-        //Mouse Input
+        //Takes mouse input
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        //Left and Right Mouse Movement
-        Player.transform.Rotate(Vector3.up * mouseX);
+        //Rotates left and right
+        player.Rotate(Vector3.up * mouseX);
 
-        //Up and Down Mouse Movement
+        //Rotates up and down 
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
     }
 }

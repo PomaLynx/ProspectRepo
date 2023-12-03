@@ -5,67 +5,105 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
-    CharacterController PlayerController;
+    Rigidbody playerRigidbody;
 
     [Header("Attributes")]
-    private float playerSpeed = 7f;
-    private float jumpForce = 2f;
+    public float playerSpeed = 7;
 
-    [Header("Gravity Parameters")]
-    private float gravity = -9.81f;
-    private Vector3 velocity;
+    [Header("Jump Parameters")]
+    public float jumpForce;
+    public float jumpCooldown;
+    public float airMultiplier;
+    public bool canJump = true;
 
-    [Header("GroundCheck Parameters")]
-    private Transform groundCheck;
-    private float groundDistance = 0.4f;
+    [Header("Groundcheck Parameters")]
+    public float groundDrag = 1;
+    public float playerHeight = 1.05f;
     public LayerMask groundMask;
-    bool isGrounded;
+    public bool isGrounded;
 
-    void Start()
+    void Awake()
     {
-        PlayerController = GetComponent<CharacterController>();
-        groundCheck = transform.GetChild(1); 
+        playerRigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
+        CheckIfGrounded();
+        SpeedControl();
         Movement();
-        GroundCheck();
-        Gravity();
         Jumping();
+    }
+
+    void CheckIfGrounded()
+    {
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight, groundMask);
+
+        if (isGrounded)
+        {
+            playerRigidbody.drag = groundDrag;
+        }
+        else
+        {
+            playerRigidbody.drag = 0;
+        }
+    }
+
+    void SpeedControl()
+    {
+        //Gets current velocity
+        Vector3 flatVelocity = new Vector3(playerRigidbody.velocity.x, 0f, playerRigidbody.velocity.z);
+
+        //Limits to set player speed
+        if (flatVelocity.magnitude > playerSpeed)
+        {
+            Vector3 limitedVelocity = flatVelocity.normalized * playerSpeed;
+            playerRigidbody.velocity = new Vector3(limitedVelocity.x, playerRigidbody.velocity.y, limitedVelocity.z);
+        }
     }
 
     void Movement()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        //Gets keyboard input
+        float xMovement = Input.GetAxisRaw("Horizontal");
+        float zMovement = Input.GetAxisRaw("Vertical");
 
-        Vector3 playerDirection = transform.right * moveX + transform.forward * moveZ;
+        //Gets the players forward direction
+        Vector3 playerDirection = transform.right * xMovement + transform.forward * zMovement;
 
-        PlayerController.Move(playerDirection * playerSpeed * Time.deltaTime);
-    }
-
-    void GroundCheck()
-    {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if (isGrounded && velocity.y < 0)
+        //Moves the player
+        if (isGrounded)
         {
-            velocity.y = -2f;
+            playerRigidbody.AddForce(playerDirection.normalized * playerSpeed, ForceMode.Force);
         }
-    }
-
-    void Gravity()
-    {
-        velocity.y += gravity * Time.deltaTime;
-        PlayerController.Move(velocity * Time.deltaTime);
+        else
+        {
+            playerRigidbody.AddForce(playerDirection.normalized * playerSpeed * airMultiplier, ForceMode.Force);
+        }
     }
 
     void Jumping()
     {
-        if (Input.GetKeyDown("space") && isGrounded)
+        if (Input.GetKeyDown("space") && canJump && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            canJump = false;
+
+            //The actual jump
+            playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, 0f, playerRigidbody.velocity.z);
+            playerRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+            Invoke(nameof(ResetJump), jumpCooldown);
         }
+    }
+
+    void ResetJump()
+    {
+        canJump = true;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, Vector3.down * playerHeight);
     }
 }
