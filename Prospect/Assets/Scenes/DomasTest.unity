@@ -6069,7 +6069,7 @@ GameObject:
   - component: {fileID: 813834232}
   - component: {fileID: 813834231}
   m_Layer: 0
-  m_Name: PlayerGUI
+  m_Name: PlayerUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13113,8 +13113,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1052866390}
   - {fileID: 963194228}
+  - {fileID: 1052866390}
   - {fileID: 813834230}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13127,7 +13127,7 @@ Rigidbody:
   m_GameObject: {fileID: 1613528900}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 1
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -13157,17 +13157,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc41010f6ec18b64184bcd7e62cf688c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 4
+  playerSpeed: 3
   jumpForce: 5
   jumpCooldown: 1.5
-  airMultiplier: 4
+  airMultiplier: 1
   canJump: 1
   groundDrag: 1
   playerHeight: 1.05
   groundMask:
     serializedVersion: 2
     m_Bits: 8
-  isGrounded: 0
+  isGrounded: 1
 --- !u!1 &1639435820
 GameObject:
   m_ObjectHideFlags: 0
